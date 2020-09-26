@@ -131,10 +131,10 @@ export async function getFilesCli(
   if (!await fs.exists(dir)) {
     throw new Error("Can not bundle to a non-existant directory");
   }
-  const files: BundleFile[] = [];
+  const files: Set<BundleFile> = new Set();
 
   const cached: string = progress.title;
-  progress.title = "Fetching...";
+  progress.title = "Fetching";
   progress.total = 0;
 
   for await (let file of walkSync(dir)) {
@@ -146,6 +146,7 @@ export async function getFilesCli(
     if (file.isFile) {
       progress.total++;
       progress.render(0);
+      progress.title = 'Fetching: ' + file.name;
       const ext = file.path.split(".").pop();
       let contents: Uint8Array;
 
@@ -163,7 +164,7 @@ export async function getFilesCli(
         case "gitignore":
         case "md":
           contents = await Deno.readFile(file.path);
-          files.push({
+          files.add({
             path: fixed,
             name: file.name,
             contents: new TextDecoder().decode(contents),
@@ -172,7 +173,7 @@ export async function getFilesCli(
           break;
         default:
           contents = await Deno.readFile(file.path);
-          files.push({
+          files.add({
             path: fixed,
             name: file.name,
             contents: contents,
@@ -186,15 +187,17 @@ export async function getFilesCli(
   return [files, progress];
 }
 export async function bundleCli(
-  files: BundleFile[],
+  files: Set<BundleFile>,
   progress: ProgressBar
 ): Promise<Uint8Array> {
   const stream = new BinaryStream();
+  const cached = progress.title;
   stream.writeShort(BUNDLE_HEADER.byteLength);
   stream.append(Buffer.from(BUNDLE_HEADER));
-  progress.total = files.length;
+  progress.total = files.size;
   let completed = 0;
   for (let file of files) {
+    progress.title = cached + ':' + file.name;
     let compiled = compile(file.path, file.name, file.contents);
     stream.writeLong(BigInt(compiled.byteLength));
     stream.append(new Buffer(compiled));
@@ -206,19 +209,21 @@ export async function bundleCli(
   return stream.buffer;
 }
 export async function bundleCliLarge(
-  files: BundleFile[],
+  files: Set<BundleFile>,
   progress: ProgressBar,
   bundleFile: Deno.File
 ): Promise<boolean> {
   const stream = new BinaryStream();
+  const cached = progress.title;
   stream.writeShort(BUNDLE_HEADER.byteLength);
   stream.append(Buffer.from(BUNDLE_HEADER));
   await bundleFile.write(stream.buffer);
 
-  progress.total = files.length;
+  progress.total = files.size;
   let completed = 0;
 
   for await (let file of files) {
+    progress.title = cached + ':' + file.name;
     let streamFile = new BinaryStream();
     let compiled = compile(file.path, file.name, file.contents);
     streamFile.writeLong(BigInt(compiled.byteLength));
