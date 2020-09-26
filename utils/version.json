@@ -1,6 +1,6 @@
 {
-     "VERSION": "1.0.5",
-     "NUMERIC": 105,
-     "NUMERIC_DEV": 106,
-     "DEVELOPER": true
+     "VERSION": "1.0.6",
+     "NUMERIC": 106,
+     "NUMERIC_DEV": 107,
+     "DEVELOPER": false
 }

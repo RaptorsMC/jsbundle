@@ -2,6 +2,12 @@ import type ProgressBar from "https://deno.land/x/progress@v1.1.3/mod.ts";
 import { resolve, sep } from "https://deno.land/std@0.71.0/path/mod.ts";
 import { fs, walk, walkSync, BinaryStream, Buffer } from "../deps.ts";
 import { BundleFile, BUNDLE_HEADER, compile } from "../mod.ts";
+
+/**
+ * Bundles a directory synchronously
+ * @param dir 
+ * @param skippaths - The paths to skip when bundling
+ */
 export function bundleSync(dir: string, skippaths: string[] = []): Uint8Array {
   if (!fs.existsSync(dir)) {
     throw new Error("Can not bundle to a non-existant directory");
@@ -62,6 +68,11 @@ export function bundleSync(dir: string, skippaths: string[] = []): Uint8Array {
   return stream.buffer;
 }
 
+/**
+ * Bundles a directory asynchronously
+ * @param dir - The directory to bundle
+ * @param skippaths - Paths to skip when bundling
+ */
 export async function bundle(
   dir: string,
   skippaths: string[] = [],

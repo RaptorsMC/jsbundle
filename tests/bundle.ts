@@ -1,4 +1,3 @@
-import { compile, decompile, bundleSync } from "../mod.ts";
-import { resolve } from "https://deno.land/std@0.71.0/path/mod.ts";
+import { bundleSync } from "../mod.ts";
 const project = bundleSync(Deno.cwd(), [".git"]);
-Deno.writeFile(Deno.cwd() + "/everything.bundlejs", project);
+Deno.writeFile(Deno.cwd() + "/jsbundle.bundlejs", project);

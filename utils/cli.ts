@@ -131,7 +131,10 @@ export async function upgrade(args: string[]) {
 
   if ((repo.NUMERIC > NUMERIC_VERISON) || args.includes("--force")) {
     setTimeout(async () => {
-      if (repo.DEVELOPER && !(!DEV || args.includes('--dev') || args.includes('--force'))) {
+      if (
+        repo.DEVELOPER &&
+        !(!DEV || args.includes("--dev") || args.includes("--force"))
+      ) {
         LogInfo(`You are on the latest version!`);
         return;
       }
