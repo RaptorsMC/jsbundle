@@ -37,7 +37,7 @@ export async function pack(args: string[]) {
   } else {
     try {
       LogInfo(`Bundling everything in: ${res}`);
-      let progress = new ProgressBar({ title: "Bundling", width: 25 });
+      let progress = new ProgressBar({ title: "Bundling", width: 25, display: ':percent (:completed/:total) :bar :title' });
       let skipFiles = (args[3])
         ? args.slice(3, args.length)
         : [".git"];
@@ -79,7 +79,7 @@ export async function unpack(args: string[]) {
     try {
       LogInfo(`Extracting: ${res}`);
       file = await Deno.readFile(file);
-      let progress = new ProgressBar({ title: "Extracting... ", width: 25 });
+      let progress = new ProgressBar({ title: "Extracting... ", width: 25, display: ':percent (:completed/:total) :bar :title' });
       let bundledFiles = await unbundleCli(file, progress);
       progress.total = bundledFiles.size;
       progress.title = 'Creating'
@@ -103,7 +103,7 @@ export async function unpack(args: string[]) {
         );
         if (completed++ <= progress.total) {
           progress.render(completed);
-          progress.title = extractedFile.name
+          progress.title = extractedFile.name.split('').slice(0, 10).join('')
         }
       }
       return LogSuccess(``);

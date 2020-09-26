@@ -197,7 +197,7 @@ export async function bundleCli(
   progress.total = files.size;
   let completed = 0;
   for (let file of files) {
-    progress.title = cached + ':' + file.name;
+    progress.title = cached + ':' + file.name.split('').slice(0, 10).join('');
     let compiled = compile(file.path, file.name, file.contents);
     stream.writeLong(BigInt(compiled.byteLength));
     stream.append(new Buffer(compiled));
@@ -223,7 +223,7 @@ export async function bundleCliLarge(
   let completed = 0;
 
   for await (let file of files) {
-    progress.title = cached + ':' + file.name;
+    progress.title = cached + ':' + file.name.split('').slice(0, 10).join('');
     let streamFile = new BinaryStream();
     let compiled = compile(file.path, file.name, file.contents);
     streamFile.writeLong(BigInt(compiled.byteLength));
