@@ -45,7 +45,7 @@ async function cli() {
         } else {
           try {
             LogInfo(`Bundling everything in: ${res}`);
-            let progress = new ProgressBar({ title: "Bundling... " });
+            let progress = new ProgressBar({ title: "Bundling... ", width: 25 });
             let bundled = await bundleCli(res, progress, ['.git']);
             Deno.writeFileSync(resolve(Deno.cwd(), `./${out}`), bundled);
             return LogSuccess(`Bundled everything into: ${out}`);
@@ -77,10 +77,10 @@ async function cli() {
           try {
             LogInfo(`Extracting: ${res}`);
             file = await Deno.readFile(file);
-            let progress = new ProgressBar({ title: "Extracting... " });
+            let progress = new ProgressBar({ title: "Extracting... ", width: 25 });
             let bundledFiles = await unbundleCli(file, progress);
             progress = new ProgressBar(
-              { total: bundledFiles.length, title: "Creating Files" },
+              { total: bundledFiles.length, title: "Creating Files", width: 25 },
             );
             progress.total = bundledFiles.length;
             let completed = 0;
