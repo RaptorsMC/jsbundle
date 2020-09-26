@@ -86,7 +86,7 @@ export async function unpack(args: string[]) {
       );
       progress.total = bundledFiles.length;
       let completed = 0;
-      for await (let extractedFile of bundledFiles) {
+      for (let extractedFile of bundledFiles) {
         let actualPath = resolve(
           out,
           "./" + extractedFile.path.replace(extractedFile.name, ""),
@@ -97,13 +97,12 @@ export async function unpack(args: string[]) {
         } else {
           contents = extractedFile.contents;
         }
-
-        if (!await fs.exists(actualPath)) {
-          await Deno.mkdir(actualPath, { recursive: true });
-        }
-        await Deno.writeFile(
+        Deno.writeFile(
           resolve(actualPath, `./${extractedFile.name}`),
           contents,
+          {
+            create: true
+          }
         );
         if (completed++ <= progress.total) {
           progress.render(completed);
