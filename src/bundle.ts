@@ -1,4 +1,5 @@
 import type ProgressBar from "https://deno.land/x/progress@v1.1.3/mod.ts";
+import { resolve, sep } from "https://deno.land/std@0.71.0/path/mod.ts";
 import { fs, walk, walkSync, BinaryStream, Buffer } from "../deps.ts";
 import { BundleFile, BUNDLE_HEADER, compile } from "../mod.ts";
 export function bundleSync(dir: string, skippaths: string[] = []): Uint8Array {
@@ -12,7 +13,7 @@ export function bundleSync(dir: string, skippaths: string[] = []): Uint8Array {
   stream.append(Buffer.from(BUNDLE_HEADER));
 
   for (let file of walkSync(dir)) {
-    let fixed = file.path.replace(dir + "/", "");
+    let fixed = file.path.replace(dir + sep, "");
     if (file.isDirectory || file.isFile) {
       let ignored = fixed.split(/\/|\\/ig);
       if (skippaths.includes(ignored[0])) continue;
@@ -74,7 +75,7 @@ export async function bundle(
   stream.append(Buffer.from(BUNDLE_HEADER));
 
   for await (let file of walk(dir)) {
-    let fixed = file.path.replace(dir + "/", "");
+    let fixed = file.path.replace(dir + sep, "");
     if (file.isDirectory || file.isFile) {
       let ignored = fixed.split(/\/|\\/ig);
       if (skippaths.includes(ignored[0])) continue;
@@ -137,7 +138,7 @@ export async function getFilesCli(
   progress.total = 0;
 
   for await (let file of walkSync(dir)) {
-    let fixed = file.path.replace(dir + "/", "");
+    let fixed = file.path.replace(dir + sep, "");
     if (file.isDirectory || file.isFile) {
       let ignored = fixed.split(/\/|\\/ig);
       if (skippaths.includes(ignored[0])) continue;

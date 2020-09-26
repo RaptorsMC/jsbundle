@@ -110,7 +110,6 @@ export async function unpack(args: string[]) {
         `Extracting everything from ${args[1]} into: ${out}`,
       );
     } catch (e) {
-      console.error(e);
       return LogError(e);
     }
   }
