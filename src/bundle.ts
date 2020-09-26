@@ -131,7 +131,7 @@ export async function getFilesCli(
   if (!await fs.exists(dir)) {
     throw new Error("Can not bundle to a non-existant directory");
   }
-  const files: BundleFile[] = [];
+  const files: Set<BundleFile> = new Set();
 
   const cached: string = progress.title;
   progress.title = "Fetching...";
@@ -163,7 +163,7 @@ export async function getFilesCli(
         case "gitignore":
         case "md":
           contents = await Deno.readFile(file.path);
-          files.push({
+          files.add({
             path: fixed,
             name: file.name,
             contents: new TextDecoder().decode(contents),
@@ -172,7 +172,7 @@ export async function getFilesCli(
           break;
         default:
           contents = await Deno.readFile(file.path);
-          files.push({
+          files.add({
             path: fixed,
             name: file.name,
             contents: contents,
@@ -186,13 +186,13 @@ export async function getFilesCli(
   return [files, progress];
 }
 export async function bundleCli(
-  files: BundleFile[],
+  files: Set<BundleFile>,
   progress: ProgressBar,
 ): Promise<Uint8Array> {
   const stream = new BinaryStream();
   stream.writeShort(BUNDLE_HEADER.byteLength);
   stream.append(Buffer.from(BUNDLE_HEADER));
-  progress.total = files.length;
+  progress.total = files.size;
   let completed = 0;
   for (let file of files) {
     let compiled = compile(file.path, file.name, file.contents);
@@ -206,7 +206,7 @@ export async function bundleCli(
   return stream.buffer;
 }
 export async function bundleCliLarge(
-  files: BundleFile[],
+  files: Set<BundleFile>,
   progress: ProgressBar,
   bundleFile: Deno.File,
 ): Promise<boolean> {
@@ -215,7 +215,7 @@ export async function bundleCliLarge(
   stream.append(Buffer.from(BUNDLE_HEADER));
   await bundleFile.write(stream.buffer);
 
-  progress.total = files.length;
+  progress.total = files.size;
   let completed = 0;
 
   for await (let file of files) {
