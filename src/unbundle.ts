@@ -32,9 +32,9 @@ export async function unbundle(file: Uint8Array): Promise<BundleFile[]> {
 export async function unbundleCli(
   file: Uint8Array,
   progress: ProgressBar,
-): Promise<BundleFile[]> {
+): Promise<Set<BundleFile>> {
   const stream = new BinaryStream(Buffer.from(file));
-  const files = [];
+  const files: Set<BundleFile> = new Set();
   const HEADER = stream.read(stream.readShort());
   if (Array.from(HEADER).join(",") !== Array.from(BUNDLE_HEADER).join(",")) {
     throw "Invalid Bundle";
@@ -43,8 +43,8 @@ export async function unbundleCli(
   progress.total = 1;
   while (!stream.feof()) {
     let decompiled = decompile(stream.read(Number(stream.readLong())));
-    files.push(decompiled);
-    progress.total = files.length;
+    files.add(decompiled);
+    progress.total = files.size;
     progress.render(0);
   }
   return files;

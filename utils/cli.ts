@@ -81,10 +81,10 @@ export async function unpack(args: string[]) {
       file = await Deno.readFile(file);
       let progress = new ProgressBar({ title: "Extracting... ", width: 25 });
       let bundledFiles = await unbundleCli(file, progress);
-      progress.total = bundledFiles.length;
+      progress.total = bundledFiles.size;
       progress.title = 'Creating'
       let completed = 0;
-      for await (let extractedFile of bundledFiles) {
+      for (let extractedFile of bundledFiles) {
         let actualPath = resolve(
           out,
           "./" + extractedFile.path.replace(extractedFile.name, ""),
@@ -95,7 +95,7 @@ export async function unpack(args: string[]) {
         } else {
           contents = extractedFile.contents;
         }
-        Deno.writeFile(
+        await Deno.writeFile(
           resolve(actualPath, `./${extractedFile.name}`),
           contents,
           {
