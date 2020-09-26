@@ -22,6 +22,7 @@ export function compile(
       // we can always try binary
       filecontents = atob(escape(filecontents));
       specialEncoding = true;
+      console.error(e);
     }
     stream.writeBool(true);
     stream.writeBool(specialEncoding);
