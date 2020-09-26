@@ -9,7 +9,7 @@ export function unbundleSync(file: Uint8Array): BundleFile[] {
     throw "Invalid Bundle";
   }
   while (!stream.feof()) {
-    let decompiled = decompile(stream.read(stream.readShort()));
+    let decompiled = decompile(stream.read(Number(stream.readLong())));
     files.push(decompiled);
   }
   return files;
@@ -23,7 +23,7 @@ export async function unbundle(file: Uint8Array): Promise<BundleFile[]> {
     throw "Invalid Bundle";
   }
   while (!stream.feof()) {
-    let decompiled = decompile(stream.read(stream.readShort()));
+    let decompiled = decompile(stream.read(Number(stream.readLong())));
     files.push(decompiled);
   }
   return files;
@@ -41,7 +41,7 @@ export async function unbundleCli(
   }
   progress.total = stream.buffer.byteLength;
   while (!stream.feof()) {
-    let decompiled = decompile(stream.read(stream.readShort()));
+    let decompiled = decompile(stream.read(Number(stream.readLong())));
     files.push(decompiled);
     if (stream.buffer.byteOffset <= stream.buffer.byteLength) {
       progress.render(stream.buffer.byteOffset);

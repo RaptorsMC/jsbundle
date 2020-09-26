@@ -10,11 +10,11 @@ export function decompile(buf: Uint8Array): BundleFile {
   let contents: string | Uint8Array;
 
   if (!isText) {
-    contents = stream.read(stream.readUnsignedVarLong());
+    contents = stream.read(Number(stream.readLong()));
   } else {
     contents = (!isSpecial)
-      ? atob(decoder.decode(stream.read(stream.readUnsignedVarLong())))
-      : unescape(decoder.decode(stream.read(stream.readUnsignedVarLong())));
+      ? atob(decoder.decode(stream.read(Number(stream.readLong()))))
+      : unescape(decoder.decode(stream.read(Number(stream.readLong()))));
   }
 
   return {

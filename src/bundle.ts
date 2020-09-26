@@ -55,7 +55,7 @@ export function bundleSync(dir: string, skippaths: string[] = []): Uint8Array {
   }
   for (let file of files) {
     let compiled = compile(file.path, file.name, file.contents);
-    stream.writeShort(compiled.byteLength);
+    stream.writeLong(BigInt(compiled.byteLength));
     stream.append(new Buffer(compiled));
   }
   return stream.buffer;
@@ -117,7 +117,7 @@ export async function bundle(
   }
   for (let file of files) {
     let compiled = compile(file.path, file.name, file.contents);
-    stream.writeShort(compiled.byteLength);
+    stream.writeLong(BigInt(compiled.byteLength));
     stream.append(new Buffer(compiled));
   }
   return stream.buffer;
@@ -189,7 +189,7 @@ export async function bundleCli(
   progress.title = cached;
   for (let file of files) {
     let compiled = compile(file.path, file.name, file.contents);
-    stream.writeShort(compiled.byteLength);
+    stream.writeLong(BigInt(compiled.byteLength));
     stream.append(new Buffer(compiled));
     completed++;
     if (completed <= progress.total) {
