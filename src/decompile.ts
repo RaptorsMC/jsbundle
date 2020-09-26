@@ -12,9 +12,9 @@ export function decompile(buf: Uint8Array): BundleFile {
   if (!isText) {
     contents = stream.read(stream.readShort());
   } else {
-    contents = (!isSpecial) 
+    contents = (!isSpecial)
       ? atob(decoder.decode(stream.read(stream.readShort())))
-      : unescape(decoder.decode(stream.read(stream.readShort())))
+      : unescape(decoder.decode(stream.read(stream.readShort())));
   }
 
   return {

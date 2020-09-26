@@ -1,6 +1,6 @@
 import * as colors from "https://deno.land/std/fmt/colors.ts";
 import { VERSION } from "../mod.ts";
-const BUNDLEJS = colors.bold(
+export const BUNDLEJS = colors.bold(
   colors.rgb24("JS", 0x039dfc) + colors.rgb24("Bundle", 0x03cafc),
 );
 function aqua(str: string): string {
@@ -25,7 +25,12 @@ export function LogHelp() {
     colors.white("COMMANDS:"),
     `   ${aqua("pack")}     bundles the source files of a directory`,
     `   ${aqua("unpack")}   extracts a bundled file`,
-    `   ${aqua("help")}     shows help for BundleJS`,
+    `   ${aqua("help")}     shows help for JSBundle`,
+    `   ${aqua("version")}  Get the current ${BUNDLEJS} version`,
+    `   ${aqua("upgrade")}  Updates JSBundle`,
+    `   ${aqua("bundle")}   Alias for pack`,
+    `   ${aqua("extract")}  Alias for unpack`,
+    `   ${aqua("unbundle")} Alias for unpack`,
   ];
 
   for (let msg of helpMsg) {
@@ -50,5 +55,5 @@ export function LogInfo(str: string): void {
 }
 
 export function LogVersion() {
-  console.log('You are running ' + BUNDLEJS + ' v' + colors.bold(VERSION))
+  console.log("You are running " + BUNDLEJS + " v" + colors.bold(VERSION));
 }
