@@ -6,12 +6,15 @@ export function decompile(buf: Uint8Array): BundleFile {
   let location = decoder.decode(stream.read(stream.readShort()));
   let name = decoder.decode(stream.read(stream.readShort()));
   let isText = stream.readBool();
+  let isSpecial = stream.readBool();
   let contents: string | Uint8Array;
 
   if (!isText) {
     contents = stream.read(stream.readShort());
   } else {
-    contents = atob(decoder.decode(stream.read(stream.readShort())));
+    contents = (!isSpecial) 
+      ? atob(decoder.decode(stream.read(stream.readShort())))
+      : atob(unescape(decoder.decode(stream.read(stream.readShort()))))
   }
 
   return {
