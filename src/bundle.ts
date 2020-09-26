@@ -186,13 +186,13 @@ export async function getFilesCli(
   return [files, progress];
 }
 export async function bundleCli(
-  files: Set<BundleFile>,
+  files: BundleFile[],
   progress: ProgressBar,
 ): Promise<Uint8Array> {
   const stream = new BinaryStream();
   stream.writeShort(BUNDLE_HEADER.byteLength);
   stream.append(Buffer.from(BUNDLE_HEADER));
-  progress.total = files.size;
+  progress.total = files.length;
   let completed = 0;
   for (let file of files) {
     let compiled = compile(file.path, file.name, file.contents);
