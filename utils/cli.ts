@@ -129,6 +129,9 @@ export async function upgrade() {
                     LogError(`Failed to upgrade.`);
                }
           }, 100);
+     } else {
+          LogInfo(`You are on the latest version!`);
+          return;
      }
 }
 
