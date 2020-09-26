@@ -8,6 +8,7 @@ import {
   LogHelp,
   LogInfo,
   LogSuccess,
+  LogVersion,
   LogWarn,
 } from "./utils/logging.ts";
 
@@ -109,6 +110,9 @@ async function cli() {
           }
         }
       })();
+      break;
+    case "version":
+      LogVersion();
       break;
     case "help":
     default:

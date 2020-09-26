@@ -1,11 +1,12 @@
 import * as colors from "https://deno.land/std/fmt/colors.ts";
+import { VERSION } from "../mod.ts";
+const BUNDLEJS = colors.bold(
+  colors.rgb24("JS", 0x039dfc) + colors.rgb24("Bundle", 0x03cafc),
+);
 function aqua(str: string): string {
   return colors.rgb24(str, 0x03e3fc);
 }
 export function LogHelp() {
-  const BUNDLEJS = colors.bold(
-    colors.rgb24("JS", 0x039dfc) + colors.rgb24("Bundle", 0x03cafc),
-  );
   let helpMsg = [
     BUNDLEJS +
     colors.rgb24(" - Javascript and Typescript bundler for Deno.", 0xc3c6c7),
@@ -46,4 +47,8 @@ export function LogWarn(str: string): void {
 
 export function LogInfo(str: string): void {
   console.log(colors.rgb24(str, 0xc7c7c7));
+}
+
+export function LogVersion() {
+  console.log('You are running ' + BUNDLEJS + ' v' + colors.bold(VERSION))
 }
