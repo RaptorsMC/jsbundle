@@ -131,6 +131,10 @@ export async function upgrade(args: string[]) {
 
   if ((repo.NUMERIC > NUMERIC_VERISON) || args.includes("--force")) {
     setTimeout(async () => {
+      if (repo.DEVELOPER && !(!DEV || args.includes('--dev') || args.includes('--force'))) {
+        LogInfo(`You are on the latest version!`);
+        return;
+      }
       let success = await execInstall(repo.VERSION, args.includes("--dev"));
       if (success) {
         LogSuccess("Upgraded " + BUNDLEJS + ` ${VERSION} -> ${repo.VERSION}`);
