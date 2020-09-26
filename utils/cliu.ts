@@ -39,7 +39,7 @@ export async function pack(args: string[]) {
       LogInfo(`Bundling everything in: ${res}`);
       let progress = new ProgressBar({ title: "Bundling... ", width: 25 });
       let files = await getFilesCli(res, progress, [".git"]);
-      if (files[0].length > 3000) {
+      if (files[0].length > 1000) {
         files[1].title = "Bundling (Large)... "
         let file = await Deno.open(resolve(Deno.cwd(), `./${out}`), { read: true, write: true, create: true});
         await bundleCliLarge(files[0], files[1], file);
