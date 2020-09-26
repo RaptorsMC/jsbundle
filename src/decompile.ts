@@ -1,4 +1,4 @@
-import { BinaryStream, Buffer } from '../deps.ts';
+import { BinaryStream, Buffer } from "../deps.ts";
 import type { BundleFile } from "../mod.ts";
 export function decompile(buf: Uint8Array): BundleFile {
   const stream = new BinaryStream(Buffer.from(buf));
@@ -6,7 +6,7 @@ export function decompile(buf: Uint8Array): BundleFile {
   let location = decoder.decode(stream.read(stream.readShort()));
   let name = decoder.decode(stream.read(stream.readShort()));
   let isText = stream.readBool();
-  let contents: string|Uint8Array;
+  let contents: string | Uint8Array;
 
   if (!isText) {
     contents = stream.read(stream.readShort());
@@ -18,6 +18,6 @@ export function decompile(buf: Uint8Array): BundleFile {
     path: atob(location),
     name: atob(name),
     contents: contents,
-    isText: isText
+    isText: isText,
   };
 }
