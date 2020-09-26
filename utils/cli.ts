@@ -95,22 +95,17 @@ export async function unpack(args: string[]) {
         } else {
           contents = extractedFile.contents;
         }
+        if (!await fs.exists(actualPath)) {
+          await Deno.mkdir(actualPath, { recursive: true });
+        }
         await Deno.writeFile(
-          resolve(actualPath, `./${extractedFile.name}`),
-          contents,
-          {
-            create: true
-          }
+          resolve(actualPath, `./${extractedFile.name}`), contents
         );
         if (completed++ <= progress.total) {
           progress.render(completed);
-        } else {
-          LogSuccess(
-            `Extracting everything from ${args[1]} into: ${out}`,
-          );
         }
       }
-      return;
+      return LogSuccess(``);
     } catch (e) {
       return LogError(e);
     }
