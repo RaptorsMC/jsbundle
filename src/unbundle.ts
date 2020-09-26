@@ -45,9 +45,7 @@ export async function unbundleCli(
     let decompiled = decompile(stream.read(Number(stream.readLong())));
     files.push(decompiled);
     progress.total = files.length;
-    if (stream.buffer.byteOffset <= stream.buffer.byteLength) {
-      progress.render(0);
-    }
+    progress.render(0);
   }
   return files;
 }
