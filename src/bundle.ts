@@ -217,12 +217,12 @@ export async function bundleCliLarge(
   progress.total = files.length;
   let completed = 0;
 
-  for (let file of files) {
+  for await (let file of files) {
     let streamFile = new BinaryStream();
     let compiled = compile(file.path, file.name, file.contents);
     streamFile.writeLong(BigInt(compiled.byteLength));
     streamFile.append(new Buffer(compiled));
-    await bundleFile.write(streamFile.buffer);
+    bundleFile.writeSync(streamFile.buffer);
     completed++;
     if (completed <= progress.total) {
       progress.render(completed);
