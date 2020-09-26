@@ -136,7 +136,7 @@ export async function upgrade(args: string[]) {
 }
 
 export default async function execInstall(v: string, force: boolean = false): Promise<boolean> {
-     let url = 'https://deno.land/x/jsbundle@' + v + '/cli.ts'
+     let url = 'https://deno.land/x/jsbundle@v' + v + '/cli.ts'
      if (DEV || force) {
           url = 'https://raw.githubusercontent.com/RaptorsMC/jsbundle/master/cli.ts';
           Deno.run({ cmd: ["deno", "cache", "--reload", url], stdout: "piped" });

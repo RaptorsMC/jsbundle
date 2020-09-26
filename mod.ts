@@ -2,8 +2,8 @@ export { compile } from "./src/compile.ts";
 export { decompile } from "./src/decompile.ts";
 export { bundle, bundleSync } from "./src/bundle.ts";
 export { unbundle, unbundleSync } from "./src/unbundle.ts";
-export const VERSION = "1.0.2";
-export const NUMERIC_VERISON = 102;
+export const VERSION = "1.0.3";
+export const NUMERIC_VERISON = 103;
 export const DEV = false;
 export const BUNDLE_HEADER: Uint8Array = new Uint8Array(
   [
