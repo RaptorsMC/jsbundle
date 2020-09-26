@@ -149,7 +149,9 @@ export default async function execInstall(v: string, force: boolean = false): Pr
      let url = 'https://deno.land/x/jsbundle@v' + v + '/cli.ts'
      if (DEV || force) {
           url = 'https://raw.githubusercontent.com/RaptorsMC/jsbundle/master/cli.ts';
-          Deno.run({ cmd: ["deno", "cache", "--reload", url], stdout: "piped" });
+          let wait = Deno.run({ cmd: ["deno", "cache", "--reload", url], stdout: "piped" });
+          await wait.output();
+          LogInfo(`Using github...`);
      }
      const process = Deno.run({ cmd: ["deno", "install", "-f", "-A", "-n", "jsbundle", url], stdout: "piped" });
      const decoder = new TextDecoder("utf-8");
