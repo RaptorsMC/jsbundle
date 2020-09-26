@@ -122,7 +122,7 @@ export async function upgrade() {
      
      if (repo.NUMERIC > NUMERIC_VERISON) {
           setTimeout(async () => {
-               let success = await execInstall();
+               let success = await execInstall(repo.VERSION);
                if (success) {
                     LogSuccess('Upgraded ' + BUNDLEJS + ` ${VERSION} -> ${repo.VERSION}`);
                } else {
@@ -135,8 +135,8 @@ export async function upgrade() {
      }
 }
 
-export default async function execInstall(): Promise<boolean> {
-     let url = 'https://deno.land/x/jsbundle/cli.ts'
+export default async function execInstall(v: string): Promise<boolean> {
+     let url = 'https://deno.land/x/jsbundle@/cli.ts'
      if (DEV) {
           url = 'https://raw.githubusercontent.com/RaptorsMC/jsbundle/master/cli.ts';
      }
