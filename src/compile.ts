@@ -25,12 +25,12 @@ export function compile(
     }
     stream.writeBool(true);
     stream.writeBool(specialEncoding);
-    stream.writeShort(filecontents.length);
+    stream.writeUnsignedVarLong(filecontents.length);
     stream.append(Buffer.from(filecontents, "utf-8"));
   } else {
     stream.writeBool(false);
     stream.writeBool(true); // this doesnt really matter
-    stream.writeShort(filecontents.byteLength);
+    stream.writeUnsignedVarLong(filecontents.length);
     stream.append(Buffer.from(filecontents));
   }
   return stream.buffer;
