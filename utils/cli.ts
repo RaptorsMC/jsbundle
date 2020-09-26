@@ -2,7 +2,7 @@ import { resolve, sep } from "https://deno.land/std@0.71.0/path/mod.ts";
 import ProgressBar from "https://deno.land/x/progress@v1.1.3/mod.ts";
 import { fs } from "../deps.ts";
 import { DEV, NUMERIC_VERISON, VERSION } from "../mod.ts";
-import { bundleCli } from "../src/bundle.ts";
+import { bundleCli, bundleCliLarge, getFilesCli } from "../src/bundle.ts";
 import { unbundleCli } from "../src/unbundle.ts";
 import {
      BUNDLEJS,
@@ -38,8 +38,14 @@ export async function pack(args: string[]) {
     try {
       LogInfo(`Bundling everything in: ${res}`);
       let progress = new ProgressBar({ title: "Bundling... ", width: 25 });
-      let bundled = await bundleCli(res, progress, [".git"]);
-      Deno.writeFileSync(resolve(Deno.cwd(), `./${out}`), bundled);
+      let files = await getFilesCli(res, progress, [".git"]);
+      if (files.length > 3000) {
+        let file = await Deno.open(resolve(Deno.cwd(), `./${out}`), { read: true, write: true, create: true})
+        let bundled = await bundleCliLarge(files[0], files[1], file);
+      } else {
+        let bundled = await bundleCli(files[0], files[1]);
+        Deno.writeFileSync(resolve(Deno.cwd(), `./${out}`), bundled);
+      }
       return LogSuccess(`Bundled everything into: ${out}`);
     } catch (e) {
       return LogError(e);
@@ -59,9 +65,12 @@ export async function unpack(args: string[]) {
   } else {
     out = resolve(Deno.cwd(), `${args[2]}`);
   }
+  if (!file.split(".").includes('.')) {
+    file = file + ".jsbundle";
+  }
   let res = resolve(Deno.cwd(), file);
   if (!fs.existsSync(res)) {
-    return LogError("Can not find provided file: " + res);
+    return LogError("Can not find provided file: " + file);
   } else {
     try {
       LogInfo(`Extracting: ${res}`);

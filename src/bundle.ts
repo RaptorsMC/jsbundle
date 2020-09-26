@@ -122,19 +122,15 @@ export async function bundle(
   }
   return stream.buffer;
 }
-
-export async function bundleCli(
+export async function getFilesCli(
   dir: string,
   progress: ProgressBar,
   skippaths: string[] = [],
-): Promise<Uint8Array> {
+): Promise<any[]> {
   if (!await fs.exists(dir)) {
     throw new Error("Can not bundle to a non-existant directory");
   }
   const files: BundleFile[] = [];
-  const stream = new BinaryStream();
-  stream.writeShort(BUNDLE_HEADER.byteLength);
-  stream.append(Buffer.from(BUNDLE_HEADER));
 
   const cached: string = progress.title;
   progress.title = "Fetching...";
@@ -148,6 +144,7 @@ export async function bundleCli(
     }
     if (file.isFile) {
       progress.total++;
+      progress.render(0);
       const ext = file.path.split(".").pop();
       let contents: Uint8Array;
 
@@ -184,9 +181,18 @@ export async function bundleCli(
       }
     }
   }
-
-  let completed = 0;
   progress.title = cached;
+  return [files, progress];
+}
+export async function bundleCli(
+  files: BundleFile[],
+  progress: ProgressBar
+): Promise<Uint8Array> {
+  const stream = new BinaryStream();
+  stream.writeShort(BUNDLE_HEADER.byteLength);
+  stream.append(Buffer.from(BUNDLE_HEADER));
+  progress.total = files.length;
+  let completed = 0;
   for (let file of files) {
     let compiled = compile(file.path, file.name, file.contents);
     stream.writeLong(BigInt(compiled.byteLength));
@@ -197,4 +203,32 @@ export async function bundleCli(
     }
   }
   return stream.buffer;
+}
+export async function bundleCliLarge(
+  files: BundleFile[],
+  progress: ProgressBar,
+  bundleFile: Deno.File
+): Promise<boolean> {
+  const stream = new BinaryStream();
+  stream.writeShort(BUNDLE_HEADER.byteLength);
+  stream.append(Buffer.from(BUNDLE_HEADER));
+  await bundleFile.write(stream.buffer);
+
+  progress.total = files.length;
+  let completed = 0;
+
+  for (let file of files) {
+    let streamFile = new BinaryStream();
+    let compiled = compile(file.path, file.name, file.contents);
+    streamFile.writeLong(BigInt(compiled.byteLength));
+    streamFile.append(new Buffer(compiled));
+    await bundleFile.write(streamFile.buffer);
+    completed++;
+    if (completed <= progress.total) {
+      progress.render(completed);
+    }
+  }
+
+  bundleFile.close();
+  return true;
 }
