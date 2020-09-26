@@ -3,8 +3,8 @@ export { decompile } from "./src/decompile.ts";
 export { bundle, bundleSync } from "./src/bundle.ts";
 export { unbundle, unbundleSync } from "./src/unbundle.ts";
 export const VERSION = "1.0.5";
-export const NUMERIC_VERISON = 105;
-export const DEV = false;
+export const NUMERIC_VERISON = 106;
+export const DEV = true;
 export const BUNDLE_HEADER: Uint8Array = new Uint8Array(
   [
     444,
