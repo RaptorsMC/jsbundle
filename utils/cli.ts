@@ -81,12 +81,10 @@ export async function unpack(args: string[]) {
       file = await Deno.readFile(file);
       let progress = new ProgressBar({ title: "Extracting... ", width: 25 });
       let bundledFiles = await unbundleCli(file, progress);
-      progress = new ProgressBar(
-        { total: bundledFiles.length, title: "Creating Files", width: 25 },
-      );
       progress.total = bundledFiles.length;
+      progress.title = 'Creating'
       let completed = 0;
-      for (let extractedFile of bundledFiles) {
+      for await (let extractedFile of bundledFiles) {
         let actualPath = resolve(
           out,
           "./" + extractedFile.path.replace(extractedFile.name, ""),
@@ -106,11 +104,13 @@ export async function unpack(args: string[]) {
         );
         if (completed++ <= progress.total) {
           progress.render(completed);
+        } else {
+          LogSuccess(
+            `Extracting everything from ${args[1]} into: ${out}`,
+          );
         }
       }
-      return LogSuccess(
-        `Extracting everything from ${args[1]} into: ${out}`,
-      );
+      return;
     } catch (e) {
       return LogError(e);
     }

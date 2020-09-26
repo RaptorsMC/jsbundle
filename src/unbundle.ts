@@ -39,12 +39,14 @@ export async function unbundleCli(
   if (Array.from(HEADER).join(",") !== Array.from(BUNDLE_HEADER).join(",")) {
     throw "Invalid Bundle";
   }
-  progress.total = stream.buffer.byteLength;
+  progress.title = 'Extracting';
+  progress.total = 1;
   while (!stream.feof()) {
     let decompiled = decompile(stream.read(Number(stream.readLong())));
     files.push(decompiled);
+    progress.total = files.length;
     if (stream.buffer.byteOffset <= stream.buffer.byteLength) {
-      progress.render(stream.buffer.byteOffset);
+      progress.render(0);
     }
   }
   return files;
