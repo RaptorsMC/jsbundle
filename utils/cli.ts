@@ -140,7 +140,7 @@ export default async function execInstall(v: string): Promise<boolean> {
      if (DEV) {
           url = 'https://raw.githubusercontent.com/RaptorsMC/jsbundle/master/cli.ts';
      }
-     const process = Deno.run({ cmd: ["deno", "f", "-A", "-n", "jsbundle", url], stdout: "piped" });
+     const process = Deno.run({ cmd: ["deno", "-f", "-A", "-n", "jsbundle", url], stdout: "piped" });
      const decoder = new TextDecoder("utf-8");
    
      const out = await process.output();
