@@ -23,7 +23,7 @@ async function cli() {
       break;
     case "upgrade":
     case "update":
-      upgrade();
+      upgrade(args);
       break;
     case "help":
     default:

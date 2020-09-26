@@ -107,7 +107,7 @@ export async function unpack(args: string[]) {
 }
 
 
-export async function upgrade() {
+export async function upgrade(args: string[]) {
      const response = await fetch(
      "https://raw.githubusercontent.com/RaptorsMC/jsbundle/master/utils/version.json"
      ).catch(err => {
@@ -122,7 +122,7 @@ export async function upgrade() {
      
      if (repo.NUMERIC > NUMERIC_VERISON) {
           setTimeout(async () => {
-               let success = await execInstall(repo.VERSION);
+               let success = await execInstall(repo.VERSION, args.includes('--dev'));
                if (success) {
                     LogSuccess('Upgraded ' + BUNDLEJS + ` ${VERSION} -> ${repo.VERSION}`);
                } else {
@@ -135,16 +135,16 @@ export async function upgrade() {
      }
 }
 
-export default async function execInstall(v: string): Promise<boolean> {
-     let url = 'https://deno.land/x/jsbundle@/cli.ts'
-     if (DEV) {
+export default async function execInstall(v: string, force: boolean = false): Promise<boolean> {
+     let url = 'https://deno.land/x/jsbundle@' + v + '/cli.ts'
+     if (DEV || force) {
           url = 'https://raw.githubusercontent.com/RaptorsMC/jsbundle/master/cli.ts';
+          Deno.run({ cmd: ["deno", "cache", "--reload", url], stdout: "piped" });
      }
      const process = Deno.run({ cmd: ["deno", "install", "-f", "-A", "-n", "jsbundle", url], stdout: "piped" });
      const decoder = new TextDecoder("utf-8");
    
      const out = await process.output();
-     console.log(decoder.decode(out));
      const response = (await process.status()).success;
    
      if (!response) {
