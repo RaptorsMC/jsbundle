@@ -40,7 +40,7 @@ export async function unbundleCli(
     throw "Invalid Bundle";
   }
   progress.title = 'Extracting';
-  progress.total = 10;
+  progress.total = 1;
   while (!stream.feof()) {
     let decompiled = decompile(stream.read(Number(stream.readLong())));
     files.add(decompiled);

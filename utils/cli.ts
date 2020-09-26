@@ -37,13 +37,13 @@ export async function pack(args: string[]) {
   } else {
     try {
       LogInfo(`Bundling everything in: ${res}`);
-      let progress = new ProgressBar({ title: "Bundling", width: 25, display: ':percent (:completed/:total) :bar :title' });
+      let progress = new ProgressBar({ title: "Bundling... ", width: 25 });
       let skipFiles = (args[3])
         ? args.slice(3, args.length)
         : [".git"];
       let files = await getFilesCli(res, progress, skipFiles);
-      if (files[0].size > 1000) {
-        files[1].title = "Bundling (Large) "
+      if (files[0].length > 1000) {
+        files[1].title = "Bundling (Large)... "
         let file = await Deno.open(resolve(Deno.cwd(), `./${out}`), { read: true, write: true, create: true});
         await bundleCliLarge(files[0], files[1], file);
       } else {
@@ -79,7 +79,7 @@ export async function unpack(args: string[]) {
     try {
       LogInfo(`Extracting: ${res}`);
       file = await Deno.readFile(file);
-      let progress = new ProgressBar({ title: "Extracting... ", width: 25, display: ':percent (:completed/:total) :bar :title' });
+      let progress = new ProgressBar({ title: "Extracting... ", width: 25 });
       let bundledFiles = await unbundleCli(file, progress);
       progress.total = bundledFiles.size;
       progress.title = 'Creating'
@@ -103,7 +103,6 @@ export async function unpack(args: string[]) {
         );
         if (completed++ <= progress.total) {
           progress.render(completed);
-          progress.title = extractedFile.name.split('').slice(0, 10).join('')
         }
       }
       return LogSuccess(``);
@@ -143,23 +142,23 @@ export async function upgrade(args: string[]) {
 }
 
 export default async function execInstall(v: string, force: boolean = false): Promise<boolean> {
-     let url = 'https://deno.land/x/jsbundle@v' + v + '/cli.ts'
-     if (DEV || force) {
-          url = 'https://raw.githubusercontent.com/RaptorsMC/jsbundle/master/cli.ts';
-          let wait = Deno.run({ cmd: ["deno", "cache", "--reload", url], stdout: "piped" });
-          await wait.output();
-          LogInfo(`Using github...`);
-     }
-     const process = Deno.run({ cmd: ["deno", "install", "-f", "-A", "-n", "jsbundle", url], stdout: "piped" });
-     const decoder = new TextDecoder("utf-8");
-   
-     const out = await process.output();
-     const response = (await process.status()).success;
-   
-     if (!response) {
-       process.close();
-       LogError('Failed to upgrade');
-     }
-   
-     return response;
-   }
+  let url = 'https://deno.land/x/jsbundle@v' + v + '/cli.ts'
+  if (DEV || force) {
+      url = 'https://raw.githubusercontent.com/RaptorsMC/jsbundle/master/cli.ts';
+      let wait = Deno.run({ cmd: ["deno", "cache", "--reload", url], stdout: "piped" });
+      await wait.output();
+      LogInfo(`Using github...`);
+  }
+  const process = Deno.run({ cmd: ["deno", "install", "-f", "-A", "-n", "jsbundle", url], stdout: "piped" });
+  const decoder = new TextDecoder("utf-8");
+
+  const out = await process.output();
+  const response = (await process.status()).success;
+
+  if (!response) {
+    process.close();
+    LogError('Failed to upgrade');
+  }
+
+  return response;
+}
