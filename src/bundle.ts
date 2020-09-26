@@ -206,7 +206,7 @@ export async function bundleCli(
   return stream.buffer;
 }
 export async function bundleCliLarge(
-  files: Set<BundleFile>,
+  files: BundleFile[],
   progress: ProgressBar,
   bundleFile: Deno.File,
 ): Promise<boolean> {
@@ -215,7 +215,7 @@ export async function bundleCliLarge(
   stream.append(Buffer.from(BUNDLE_HEADER));
   await bundleFile.write(stream.buffer);
 
-  progress.total = files.size;
+  progress.total = files.length;
   let completed = 0;
 
   for await (let file of files) {
