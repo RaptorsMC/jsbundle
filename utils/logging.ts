@@ -55,5 +55,11 @@ export function LogInfo(str: string): void {
 }
 
 export function LogVersion() {
-  console.log("You are running " + BUNDLEJS + " v" + colors.bold(VERSION + ((DEV) ? '-DEV' : '')));
+  console.log(
+    "You are running " + BUNDLEJS + " v" + colors.bold(
+      VERSION + ((DEV)
+        ? "-DEV"
+        : ""),
+    ),
+  );
 }

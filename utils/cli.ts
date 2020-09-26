@@ -5,7 +5,7 @@ import { DEV, NUMERIC_VERISON, VERSION } from "../mod.ts";
 import { bundleCli, bundleCliLarge, getFilesCli } from "../src/bundle.ts";
 import { unbundleCli } from "../src/unbundle.ts";
 import {
-     BUNDLEJS,
+  BUNDLEJS,
   LogError,
   LogHelp,
   LogInfo,
@@ -38,13 +38,14 @@ export async function pack(args: string[]) {
     try {
       LogInfo(`Bundling everything in: ${res}`);
       let progress = new ProgressBar({ title: "Bundling... ", width: 25 });
-      let skipFiles = (args[3])
-        ? args.slice(3, args.length)
-        : [".git"];
+      let skipFiles = (args[3]) ? args.slice(3, args.length) : [".git"];
       let files = await getFilesCli(res, progress, skipFiles);
       if (files[0].length > 1000) {
-        files[1].title = "Bundling (Large)... "
-        let file = await Deno.open(resolve(Deno.cwd(), `./${out}`), { read: true, write: true, create: true});
+        files[1].title = "Bundling (Large)... ";
+        let file = await Deno.open(
+          resolve(Deno.cwd(), `./${out}`),
+          { read: true, write: true, create: true },
+        );
         await bundleCliLarge(files[0], files[1], file);
       } else {
         let bundled = await bundleCli(files[0], files[1]);
@@ -69,7 +70,7 @@ export async function unpack(args: string[]) {
   } else {
     out = resolve(Deno.cwd(), `${args[2]}`);
   }
-  if (!file.split(".").includes('.')) {
+  if (!file.split(".").includes(".")) {
     file = file + ".jsbundle";
   }
   let res = resolve(Deno.cwd(), file);
@@ -82,7 +83,7 @@ export async function unpack(args: string[]) {
       let progress = new ProgressBar({ title: "Extracting... ", width: 25 });
       let bundledFiles = await unbundleCli(file, progress);
       progress.total = bundledFiles.size;
-      progress.title = 'Creating'
+      progress.title = "Creating";
       let completed = 0;
       for (let extractedFile of bundledFiles) {
         let actualPath = resolve(
@@ -99,7 +100,8 @@ export async function unpack(args: string[]) {
           await Deno.mkdir(actualPath, { recursive: true });
         }
         await Deno.writeFile(
-          resolve(actualPath, `./${extractedFile.name}`), contents
+          resolve(actualPath, `./${extractedFile.name}`),
+          contents,
         );
         if (completed++ <= progress.total) {
           progress.render(completed);
@@ -112,44 +114,55 @@ export async function unpack(args: string[]) {
   }
 }
 
-
 export async function upgrade(args: string[]) {
-     const response = await fetch(
-     "https://raw.githubusercontent.com/RaptorsMC/jsbundle/master/utils/version.json"
-     ).catch(err => {
-          LogError(`Couldn't get updates, check your connection to make sure you're connected.`);
-     }) as Response;
-     if (response.status !== 200) {
-          LogError(`Couldn't get updates: ${response.statusText}`);
-          return;
-     }
-      
-     const repo = await response.json();
-     
-     if ((repo.NUMERIC > NUMERIC_VERISON) || args.includes('--force')) {
-          setTimeout(async () => {
-               let success = await execInstall(repo.VERSION, args.includes('--dev'));
-               if (success) {
-                    LogSuccess('Upgraded ' + BUNDLEJS + ` ${VERSION} -> ${repo.VERSION}`);
-               } else {
-                    LogError(`Failed to upgrade.`);
-               }
-          }, 100);
-     } else {
-          LogInfo(`You are on the latest version!`);
-          return;
-     }
+  const response = await fetch(
+    "https://raw.githubusercontent.com/RaptorsMC/jsbundle/master/utils/version.json",
+  ).catch((err) => {
+    LogError(
+      `Couldn't get updates, check your connection to make sure you're connected.`,
+    );
+  }) as Response;
+  if (response.status !== 200) {
+    LogError(`Couldn't get updates: ${response.statusText}`);
+    return;
+  }
+
+  const repo = await response.json();
+
+  if ((repo.NUMERIC > NUMERIC_VERISON) || args.includes("--force")) {
+    setTimeout(async () => {
+      let success = await execInstall(repo.VERSION, args.includes("--dev"));
+      if (success) {
+        LogSuccess("Upgraded " + BUNDLEJS + ` ${VERSION} -> ${repo.VERSION}`);
+      } else {
+        LogError(`Failed to upgrade.`);
+      }
+    }, 100);
+  } else {
+    LogInfo(`You are on the latest version!`);
+    return;
+  }
 }
 
-export default async function execInstall(v: string, force: boolean = false): Promise<boolean> {
-  let url = 'https://deno.land/x/jsbundle@v' + v + '/cli.ts'
+export default async function execInstall(
+  v: string,
+  force: boolean = false,
+): Promise<boolean> {
+  let url = "https://deno.land/x/jsbundle@v" + v + "/cli.ts";
   if (DEV || force) {
-      url = 'https://raw.githubusercontent.com/RaptorsMC/jsbundle/master/cli.ts';
-      let wait = Deno.run({ cmd: ["deno", "cache", "--reload", url], stdout: "piped" });
-      await wait.output();
-      LogInfo(`Using github...`);
+    url = "https://raw.githubusercontent.com/RaptorsMC/jsbundle/master/cli.ts";
+    let wait = Deno.run(
+      { cmd: ["deno", "cache", "--reload", url], stdout: "piped" },
+    );
+    await wait.output();
+    LogInfo(`Using github...`);
   }
-  const process = Deno.run({ cmd: ["deno", "install", "-f", "-A", "-n", "jsbundle", url], stdout: "piped" });
+  const process = Deno.run(
+    {
+      cmd: ["deno", "install", "-f", "-A", "-n", "jsbundle", url],
+      stdout: "piped",
+    },
+  );
   const decoder = new TextDecoder("utf-8");
 
   const out = await process.output();
@@ -157,7 +170,7 @@ export default async function execInstall(v: string, force: boolean = false): Pr
 
   if (!response) {
     process.close();
-    LogError('Failed to upgrade');
+    LogError("Failed to upgrade");
   }
 
   return response;

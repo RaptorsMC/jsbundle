@@ -187,7 +187,7 @@ export async function getFilesCli(
 }
 export async function bundleCli(
   files: BundleFile[],
-  progress: ProgressBar
+  progress: ProgressBar,
 ): Promise<Uint8Array> {
   const stream = new BinaryStream();
   stream.writeShort(BUNDLE_HEADER.byteLength);
@@ -208,7 +208,7 @@ export async function bundleCli(
 export async function bundleCliLarge(
   files: BundleFile[],
   progress: ProgressBar,
-  bundleFile: Deno.File
+  bundleFile: Deno.File,
 ): Promise<boolean> {
   const stream = new BinaryStream();
   stream.writeShort(BUNDLE_HEADER.byteLength);
