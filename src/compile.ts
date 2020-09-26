@@ -20,9 +20,8 @@ export function compile(
       filecontents = btoa(filecontents);
     } catch (e) {
       // we can always try binary
-      filecontents = atob(escape(filecontents));
+      filecontents = escape(filecontents);
       specialEncoding = true;
-      console.error(e);
     }
     stream.writeBool(true);
     stream.writeBool(specialEncoding);

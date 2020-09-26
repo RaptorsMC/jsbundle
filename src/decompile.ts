@@ -14,7 +14,7 @@ export function decompile(buf: Uint8Array): BundleFile {
   } else {
     contents = (!isSpecial) 
       ? atob(decoder.decode(stream.read(stream.readShort())))
-      : atob(unescape(decoder.decode(stream.read(stream.readShort()))))
+      : unescape(decoder.decode(stream.read(stream.readShort())))
   }
 
   return {
