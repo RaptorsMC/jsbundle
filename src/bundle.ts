@@ -12,8 +12,8 @@ export function bundleSync(dir: string, skippaths: string[] = []): Uint8Array {
   stream.append(Buffer.from(BUNDLE_HEADER));
 
   for (let file of walkSync(dir)) {
+    let fixed = file.path.replace(dir + "/", "");
     if (file.isDirectory || file.isFile) {
-      let fixed = file.path.replace(dir + "/", "");
       let ignored = fixed.split(/\/|\\/ig);
       if (skippaths.includes(ignored[0])) continue;
     }
@@ -36,7 +36,7 @@ export function bundleSync(dir: string, skippaths: string[] = []): Uint8Array {
         case "md":
           contents = Deno.readFileSync(file.path);
           files.push({
-            path: file.path,
+            path: fixed,
             name: file.name,
             contents: new TextDecoder().decode(contents),
             isText: true,
@@ -45,7 +45,7 @@ export function bundleSync(dir: string, skippaths: string[] = []): Uint8Array {
         default:
           contents = Deno.readFileSync(file.path);
           files.push({
-            path: file.path,
+            path: fixed,
             name: file.name,
             contents: contents,
             isText: false,
@@ -74,8 +74,8 @@ export async function bundle(
   stream.append(Buffer.from(BUNDLE_HEADER));
 
   for await (let file of walk(dir)) {
+    let fixed = file.path.replace(dir + "/", "");
     if (file.isDirectory || file.isFile) {
-      let fixed = file.path.replace(dir + "/", "");
       let ignored = fixed.split(/\/|\\/ig);
       if (skippaths.includes(ignored[0])) continue;
     }
@@ -98,7 +98,7 @@ export async function bundle(
         case "md":
           contents = await Deno.readFile(file.path);
           files.push({
-            path: file.path,
+            path: fixed,
             name: file.name,
             contents: new TextDecoder().decode(contents),
             isText: true,
@@ -107,7 +107,7 @@ export async function bundle(
         default:
           contents = await Deno.readFile(file.path);
           files.push({
-            path: file.path,
+            path: fixed,
             name: file.name,
             contents: contents,
             isText: false,
@@ -141,8 +141,8 @@ export async function bundleCli(
   progress.total = 0;
 
   for await (let file of walkSync(dir)) {
+    let fixed = file.path.replace(dir + "/", "");
     if (file.isDirectory || file.isFile) {
-      let fixed = file.path.replace(dir + "/", "");
       let ignored = fixed.split(/\/|\\/ig);
       if (skippaths.includes(ignored[0])) continue;
     }
@@ -166,7 +166,7 @@ export async function bundleCli(
         case "md":
           contents = await Deno.readFile(file.path);
           files.push({
-            path: file.path,
+            path: fixed,
             name: file.name,
             contents: new TextDecoder().decode(contents),
             isText: true,
@@ -175,7 +175,7 @@ export async function bundleCli(
         default:
           contents = await Deno.readFile(file.path);
           files.push({
-            path: file.path,
+            path: fixed,
             name: file.name,
             contents: contents,
             isText: false,

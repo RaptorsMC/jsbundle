@@ -1,4 +1,4 @@
-import { resolve } from "https://deno.land/std@0.71.0/path/mod.ts";
+import { resolve, sep } from "https://deno.land/std@0.71.0/path/mod.ts";
 import ProgressBar from "https://deno.land/x/progress@v1.1.3/mod.ts";
 import { fs } from "./deps.ts";
 import { bundleCli } from "./src/bundle.ts";
@@ -75,19 +75,24 @@ async function cli() {
             file = await Deno.readFile(file);
             let progress = new ProgressBar({ title: "Extracting... " });
             let bundledFiles = await unbundleCli(file, progress);
-            LogInfo(`Creating local files...`);
             progress = new ProgressBar(
               { total: bundledFiles.length, title: "Creating Files" },
             );
             progress.total = bundledFiles.length;
             let completed = 0;
-            for (let extractedFile of bundledFiles) {
-              let actualPath = resolve(out, extractedFile.path);
-              console.log(actualPath);
-              /*let contents = (typeof extractedFile.contents === "string")
-                ? new TextEncoder().encode(extractedFile.contents)
-                : extractedFile.contents;*/
-              //Deno.writeFile(actualPath, contents);
+            for await (let extractedFile of bundledFiles) {
+              let actualPath = resolve(out, './' + extractedFile.path.replace(extractedFile.name, ''));
+              let contents: Uint8Array;
+              if (typeof extractedFile.contents === 'string') {
+                contents = new TextEncoder().encode(extractedFile.contents);
+              } else {
+                contents = extractedFile.contents;
+              }
+
+              if (!await fs.exists(actualPath)) {
+                await Deno.mkdir(actualPath, { recursive: true });
+              }
+              await Deno.writeFile(resolve(actualPath, `./${extractedFile.name}`), contents);
               if (completed++ <= progress.total) {
                 progress.render(completed);
               }
