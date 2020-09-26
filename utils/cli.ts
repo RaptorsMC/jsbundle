@@ -130,7 +130,7 @@ export async function upgrade(args: string[]) {
       
      const repo = await response.json();
      
-     if (repo.NUMERIC > NUMERIC_VERISON) {
+     if ((repo.NUMERIC > NUMERIC_VERISON) || args.includes('--force')) {
           setTimeout(async () => {
                let success = await execInstall(repo.VERSION, args.includes('--dev'));
                if (success) {
