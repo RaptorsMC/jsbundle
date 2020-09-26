@@ -4,7 +4,7 @@ function aqua(str: string): string {
 }
 export function LogHelp() {
   const BUNDLEJS = colors.bold(
-    colors.rgb24("Bundle", 0x039dfc) + colors.rgb24("JS", 0x03cafc),
+    colors.rgb24("JS", 0x039dfc) + colors.rgb24("Bundle", 0x03cafc),
   );
   let helpMsg = [
     BUNDLEJS +

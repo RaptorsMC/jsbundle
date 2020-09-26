@@ -28,12 +28,15 @@ async function cli() {
           return LogError("No directory provided");
         }
         if (!args[2]) {
+          out = resolve(Deno.cwd(), dir).split(sep).pop() + '.jsbundle';
           LogWarn(
-            'No file name provided for out file. Using name "packed.bundlejs"',
+            'No file name provided for out file. Using name "' + out + '"',
           );
-          out = "packed.bundlejs";
         } else {
           out = args[2];
+          if (out.split('.').pop() !== 'jsbundle') {
+            out = out + '.jsbundle';
+          }
         }
         let res = resolve(Deno.cwd(), dir);
         if (!fs.existsSync(res)) {
