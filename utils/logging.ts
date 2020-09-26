@@ -1,5 +1,5 @@
 import * as colors from "https://deno.land/std/fmt/colors.ts";
-import { VERSION } from "../mod.ts";
+import { DEV, VERSION } from "../mod.ts";
 export const BUNDLEJS = colors.bold(
   colors.rgb24("JS", 0x039dfc) + colors.rgb24("Bundle", 0x03cafc),
 );
@@ -55,5 +55,5 @@ export function LogInfo(str: string): void {
 }
 
 export function LogVersion() {
-  console.log("You are running " + BUNDLEJS + " v" + colors.bold(VERSION));
+  console.log("You are running " + BUNDLEJS + " v" + colors.bold(VERSION + ((DEV) ? '-DEV' : '')));
 }
