@@ -40,7 +40,7 @@ export async function pack(args: string[]) {
       let progress = new ProgressBar({ title: "Bundling... ", width: 25 });
       let skipFiles = (args[3]) ? args.slice(3, args.length) : [".git"];
       let files = await getFilesCli(res, progress, skipFiles);
-      if (files[0].size > 1000) {
+      if (files[0].length > 1000) {
         files[1].title = "Bundling (Large)... ";
         let file = await Deno.open(
           resolve(Deno.cwd(), `./${out}`),
@@ -82,7 +82,7 @@ export async function unpack(args: string[]) {
       file = await Deno.readFile(file);
       let progress = new ProgressBar({ title: "Extracting... ", width: 25 });
       let bundledFiles = await unbundleCli(file, progress);
-      progress.total = bundledFiles.size;
+      progress.total = bundledFiles.length;
       progress.title = "Creating";
       let completed = 0;
       for (let extractedFile of bundledFiles) {

@@ -131,7 +131,7 @@ export async function getFilesCli(
   if (!await fs.exists(dir)) {
     throw new Error("Can not bundle to a non-existant directory");
   }
-  const files: Set<BundleFile> = new Set();
+  const files: BundleFile[] = [];
 
   const cached: string = progress.title;
   progress.title = "Fetching...";
@@ -163,7 +163,7 @@ export async function getFilesCli(
         case "gitignore":
         case "md":
           contents = await Deno.readFile(file.path);
-          files.add({
+          files.push({
             path: fixed,
             name: file.name,
             contents: new TextDecoder().decode(contents),
@@ -172,7 +172,7 @@ export async function getFilesCli(
           break;
         default:
           contents = await Deno.readFile(file.path);
-          files.add({
+          files.push({
             path: fixed,
             name: file.name,
             contents: contents,
