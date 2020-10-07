@@ -1,6 +1,11 @@
 import type ProgressBar from "https://deno.land/x/progress@v1.1.3/mod.ts";
 import { fs, walk, walkSync, BinaryStream, Buffer } from "../deps.ts";
 import { BundleFile, BUNDLE_HEADER, compile, decompile } from "../mod.ts";
+
+/**
+ * Synchronously unbundle a BundledFile
+ * @param file - File contents to unbundle
+ */
 export function unbundleSync(file: Uint8Array): BundleFile[] {
   const stream = new BinaryStream(Buffer.from(file));
   const files = [];
@@ -15,6 +20,10 @@ export function unbundleSync(file: Uint8Array): BundleFile[] {
   return files;
 }
 
+/**
+ * Unbundle a BundledFile
+ * @param file - File contents to unbundle
+ */
 export async function unbundle(file: Uint8Array): Promise<BundleFile[]> {
   const stream = new BinaryStream(Buffer.from(file));
   const files = [];
