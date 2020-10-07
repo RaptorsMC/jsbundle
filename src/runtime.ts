@@ -1,8 +1,16 @@
 import { fs, path } from "../deps.ts";
+import type { BundleFile } from "../mod.ts";
 import { unbundle, unbundleSync } from "./unbundle.ts";
+import { UnpackedFile } from "./util/UnpackedFile.ts";
 const sep = path.sep;
 const resolve = path.resolve;
 
+interface QueuedFile {
+  path: string;
+  contents: Uint8Array;
+  ref: BundleFile;
+  namespace: boolean;
+}
 /**
  * Loads a bundle into memory and returns the imports.
  * 
@@ -20,48 +28,77 @@ export async function loadBundle(
   modOnly: boolean = true,
   modOnlyName: string = 'mod',
   deleteAfter: boolean = true,
-): Promise<Map<string, any>> {
-  let files = await unbundle(bundle);
-  let imports: Map<string, any> = new Map();
+): Promise<UnpackedFile> {
+  const FILE = new UnpackedFile(bundleName);
+  const files = await unbundle(bundle);
+  let importQueue: QueuedFile[] = [];
+  
   if (!await fs.exists(`.deno${sep}bundles${sep}${bundleName}`)) {
     await Deno.mkdir(`.deno${sep}bundles${sep}${bundleName}`, { recursive: true });
   }
   for await (let file of files) {
     file.path = file.path.replace(file.name, '');
     let ext = file.name.split('.').pop();
-    if (ext !== 'js' && ext !== 'ts') continue;
+    if (ext !== 'js' && ext !== 'ts') {
+      // not a javascript module or typescript module.
+      // todo: embed this in the file itself!
+      FILE.files.push(file)
+      continue;
+    }
+
+    // get our actual path
     let actualPath = resolve(
       `.deno${sep}bundles${sep}${bundleName}`,
       `./${file.path}`,
-      );
-    let contents: Uint8Array = new TextEncoder().encode(file.contents as string);
+    );
+    let contents: Uint8Array = (file.isText) ? new TextEncoder().encode(file.contents as string) : file.contents as Uint8Array;
+
     if (!await fs.exists(actualPath)) {
       await Deno.mkdir(actualPath, { recursive: true });
     }
-    await Deno.writeFile(
-      actualPath + sep + file.name,
-      contents,
-    );
+
     if (modOnly && (file.name == modOnlyName + '.ts' || file.name == modOnlyName + '.js')) {
-      imports.set(`${bundleName}/${file.path}${file.name}`, resolve(actualPath, `./${file.name}#${Date.now()}`));
-      imports.set(bundleName, resolve(actualPath, `./${file.name}#${Date.now()}`));
-    } else if (!modOnly) {
-      imports.set(`${bundleName}/${file.path}${file.name}`, resolve(actualPath, `./${file.name}#${Date.now()}`));
+      // this is the main file!
+      // to do: refactor and build into bundled file as a bool
+      // we actually need to write all of our files first
+      const modulePath = resolve(actualPath, `./${file.name}`);
+      await Deno.writeFile(modulePath, contents);
+      importQueue.push({
+        path: modulePath,
+        contents: contents,
+        ref: file,
+        namespace: true
+      });
+    } else {
+      const modulePath = resolve(actualPath, `./${file.name}`);
+      await Deno.writeFile(modulePath, contents);
+      importQueue.push({
+        path: modulePath,
+        contents: contents,
+        ref: file,
+        namespace: false
+      });
     }
   }
 
-  for await (let fileMod of imports) {
-    if (typeof fileMod[1] === 'string') {
-        const module = await import(fileMod[1]);
-        imports.set(fileMod[0], module);
+  for (let queued of importQueue) {
+    try {
+      const mod = await import(queued.path + "#" + Date.now());
+      if (queued.namespace) {
+        FILE.main = mod;
+      } else {
+        if (!modOnly)
+          FILE.modules.set(queued.ref.path.split(/(\\|\/)/g).join('_'), mod);
+      }
+    } catch (e) {
+      continue;
     }
   }
-
   if (deleteAfter) {
-    Deno.remove(`.deno${sep}bundles${sep}${bundleName}`, {recursive: true}).catch(e => {});
+    Deno.remove(`.deno${sep}bundles${sep}${bundleName}`, { recursive: true }).catch(e => {});
   }
 
-  return imports;
+  return FILE;
 }
 
 /**
@@ -77,31 +114,16 @@ export async function loadBundle(
 export async function extractBundleContents(
   bundleName: string,
   bundle: Uint8Array
-): Promise<Map<string, any>> {
-  let files = await unbundle(bundle);
-  let imports: Map<string, any> = new Map();
+): Promise<UnpackedFile> {
+  const FILE = new UnpackedFile(bundleName);
+  const files = await unbundle(bundle);
+  
   if (!await fs.exists(`.deno${sep}bundles${sep}${bundleName}`)) {
     await Deno.mkdir(`.deno${sep}bundles${sep}${bundleName}`, { recursive: true });
   }
   for await (let file of files) {
     file.path = file.path.replace(file.name, '');
-    let ext = file.name.split('.').pop();
-    if (ext !== 'js' && ext !== 'ts') continue;
-    let actualPath = resolve(
-      `.deno${sep}bundles${sep}${bundleName}`,
-      `./${file.path}`,
-      );
-    let contents: Uint8Array = new TextEncoder().encode(file.contents as string);
-    if (!await fs.exists(actualPath)) {
-      await Deno.mkdir(actualPath, { recursive: true });
-    }
-    await Deno.writeFile(
-      actualPath + sep + file.name,
-      contents,
-    );
-
-    imports.set(`${bundleName}${sep}${file.path}${file.name}`, resolve(actualPath, `./${file.name}`));
+    FILE.files.push(file);
   }
-
-  return imports;
+  return FILE;
 }

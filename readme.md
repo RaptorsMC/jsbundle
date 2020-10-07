@@ -3,30 +3,25 @@ A binary file for DenoJS.
 
 Bundle files without a hassle, and import them easily.
 
-### API
-Creating your own bundles:
-```ts
-import { bundle } from 'https://deno.land/x/jsbundle/mod.ts';
+### Features
+ - A custom CLI! Learn about it [here](/docs/cli.md).
+ - An easy to use [API](/docs/api.md).
+ - Load bundles as if they were in your workspace.
+ - Available on most platforms.
+ - Supports most modern ES modules!
 
-const myBundle: Uint8Array = await bundle(Deno.cwd());
-await Deno.writeFile(Deno.cwd() + '/bundle.jsbundle', myBundle);
-```
-Loading your own bundles:
-```ts
-import { loadBundle } from 'https://deno.land/x/jsbundle/mod.ts';
-
-const myBundle: Uint8Array = await Deno.readFile(Deno.cwd() + '/bundle.bundlejs');
-const imports = await loadBundle('namespace', myBundle);
-imports.get('namespace') // mod.ts file (if archived)
-```
+### FAQ
+ - **Q:** Why not just `.zip` and `unzip`? <br /> 
+     There are many reasons, however the main reason is accessibility. With jsbundle, any projects using it, can load and distribute a **single file** during runtime and experience little to no difference in performance. However while using a zip archive you need to extract and put the contents somewhere, then adjust the code.
+ - **Q:** Why was this made?<br /> 
+     JSBundle was made for a [MC:BE]() server software ([Netrex]()) to allow a clean plugin folder with easy distrubtible plugins with no extra effort. This was inspired by `.phar`'s and their easy accessibility.
+- ** 
+     
 
 ### Installation
 **Latest Stable** `deno install -A --unstable -n jsbundle https://deno.land/x/jsbundle/cli.ts`
 
 **Latest Dev** `deno install -A --unstable -n jsbundle https://raw.githubusercontent.com/RaptorsMC/jsbundle/master/cli.ts`
-
-### CLI
-Learn more about the CLI [here](/docs/cli.md)
 
 #### To Do
 - [x] Add support for runtime unbundling and imports

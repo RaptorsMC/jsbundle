@@ -11,26 +11,28 @@ export function LogHelp() {
     BUNDLEJS +
     colors.rgb24(" - Javascript and Typescript bundler for Deno.", 0xc3c6c7),
 
-    colors.white("USAGE:"),
-    `   jsbundle ${aqua("<command>")} [options] [outfile]`,
-
-    colors.white("OPTIONS:"),
-    `   ${aqua("[file]")}   The file to extract/unbundle`,
-    `   ${aqua("[dir]")}    The directory to pack/bundle`,
-
-    colors.white("OUTFILE:"),
-    `   ${aqua("filename")} The name of the newly bundled file`,
-    `   ${aqua("dirname")}  The name of the directory to extract to`,
-
-    colors.white("COMMANDS:"),
+    colors.white("\nUSAGE:"),
+    `   jsbundle ${aqua("<command>")} [options] [flags]`,
+    
+    colors.white("\nCOMMANDS:"),
     `   ${aqua("pack")}     bundles the source files of a directory`,
+    `   ${aqua("bundle")}   Alias for pack`,
     `   ${aqua("unpack")}   extracts a bundled file`,
+    `   ${aqua("extract")}  Alias for unpack`,
+    `   ${aqua("unbundle")} Alias for unpack`,
     `   ${aqua("help")}     shows help for JSBundle`,
     `   ${aqua("version")}  Get the current ${BUNDLEJS} version`,
     `   ${aqua("upgrade")}  Updates JSBundle`,
-    `   ${aqua("bundle")}   Alias for pack`,
-    `   ${aqua("extract")}  Alias for unpack`,
-    `   ${aqua("unbundle")} Alias for unpack`,
+
+    colors.white("\nOPTIONS:"),
+    `   ${aqua("[dir]")}    The file or directory to bundle or unbundle`,
+    `   ${aqua("[loc]")}    The location to bundle or location to extract a bundle to`,
+    `   ${aqua("[ignore]")} A list of directory names to ignore while bundling`,
+
+    colors.white("\nFLAGS:"),
+    `   ${aqua("--force")}  Forcefully applies a command`,
+    `   ${aqua("--dev")}    Upgrade to dev branch instead of stable`,
+
   ];
 
   for (let msg of helpMsg) {
