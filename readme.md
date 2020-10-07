@@ -15,8 +15,8 @@ Bundle files without a hassle, and import them easily.
      There are many reasons, however the main reason is accessibility. With jsbundle, any projects using it, can load and distribute a **single file** during runtime and experience little to no difference in performance. However while using a zip archive you need to extract and put the contents somewhere, then adjust the code.
  - **Q:** Why was this made?<br /> 
      JSBundle was made for a [MC:BE]() server software ([Netrex]()) to allow a clean plugin folder with easy distrubtible plugins with no extra effort. This was inspired by `.phar`'s and their easy accessibility.
-- ** 
-     
+ - **Q:** Will there be security features embeded into the api when loading a bundle? <br />
+     Yes! I plan on adding features to prevent harmful code from executing when loading a bundle! I also plan on support for deno permission flags, prompting the user for permissions.
 
 ### Installation
 **Latest Stable** `deno install -A --unstable -n jsbundle https://deno.land/x/jsbundle/cli.ts`
