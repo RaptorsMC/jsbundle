@@ -17,7 +17,7 @@ export const NUMERIC_VERISON = 106;
 /**
  * Whether or not this version is a developer version
  */
-export const DEV = true;
+export const DEV = false;
 
 /**
  * The header of each JSBundle
