@@ -7,17 +7,17 @@ export { UnpackedFile } from "./src/util/UnpackedFile.ts";
 /**
  * The version of JSBundle running
  */
-export const VERSION = "1.0.6";
+export const VERSION = "1.0.7";
 
 /**
  * The numeric version of JSBundle running
  */
-export const NUMERIC_VERISON = 106;
+export const NUMERIC_VERISON = 108;
 
 /**
  * Whether or not this version is a developer version
  */
-export const DEV = false;
+export const DEV = true;
 
 /**
  * The header of each JSBundle
