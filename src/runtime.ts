@@ -46,11 +46,11 @@ export async function loadBundle(
       continue;
     }
 
-    // get our actual path
-    let actualPath = resolve(
+    let actualPath: string = resolve(
       `.deno${sep}bundles${sep}${bundleName}`,
       `./${file.path}`,
     );
+
     let contents: Uint8Array = (file.isText) ? new TextEncoder().encode(file.contents as string) : file.contents as Uint8Array;
 
     if (!await fs.exists(actualPath)) {
@@ -83,7 +83,8 @@ export async function loadBundle(
 
   for (let queued of importQueue) {
     try {
-      const mod = await import(queued.path + "#" + Date.now());
+      const importPath: string = !queued.path.startsWith('file://') ? 'file://' + queued.path : queued.path;
+      const mod = await import(importPath + "#" + Date.now());
       if (queued.namespace) {
         FILE.main = mod;
       } else {

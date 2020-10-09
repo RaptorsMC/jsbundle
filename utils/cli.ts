@@ -22,14 +22,16 @@ export async function pack(args: string[]) {
   }
   if (!args[2]) {
     out = resolve(Deno.cwd(), dir).split(sep).pop() + ".jsbundle";
-    LogWarn(
-      'No file name provided for out file. Using name "' + out + '"',
-    );
   } else {
     out = args[2];
     if (out.split(".").pop() !== "jsbundle") {
       out = out + ".jsbundle";
     }
+  }
+
+  if (fs.existsSync(out)) {
+    LogError(`Will not create bundle! A bundle with this name already exists at: ${resolve(Deno.cwd(), dir, out)}`);
+    return;
   }
   let res = resolve(Deno.cwd(), dir);
   if (!fs.existsSync(res)) {
@@ -70,7 +72,7 @@ export async function unpack(args: string[]) {
   } else {
     out = resolve(Deno.cwd(), `${args[2]}`);
   }
-  if (!file.split(".").includes(".")) {
+  if ((file.split(".").length === 1 && file.split(".")[0] === 'jsbundle') || file.split(".").pop() !== "jsbundle") {
     file = file + ".jsbundle";
   }
   let res = resolve(Deno.cwd(), file);
